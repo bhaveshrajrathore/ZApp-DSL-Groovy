@@ -1,28 +1,27 @@
 pipeline {
 	  agent any
-	environment {
-            PATH = "C:\\WINDOWS\\SYSTEM32"
-        }
-	parameters { choice(name: 'REQUESTED_ACTION', choices: ['Package', 'Sonar Analysis'], description: '') }
-	  stages {
-		  
-		  stage('Job Start Notification') { 
-	     steps {
-		 emailext ( 
-        subject: "STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'", 
-        body: """<p>Job ${env.JOB_NAME} [${env.BUILD_NUMBER}] has been started.</p>""",
-         to: 'techdevopsnow@gmail.com'
-     )
-			}
-        }
-		  	  
-	  
-	    stage('Source') { 
+	
+	  stage('Source') { 
 	      steps {
 	    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'HappyTrip', url: 'https://github.com/bhaveshrajrathore/ZApp.git']]])
 	    
 	      }
 	    }
+	
 	  stage ('Build'){
-	                     agent DockerHost
-	                     
+	          agent DockerHost
+		  stages {
+        stage('Build image') {
+            steps {
+                echo 'Starting to build docker image'
+
+                script {
+                    def customImage = docker.build("node:${env.BUILD_ID}")
+                    customImage.push()
+                }
+            }
+        }
+    }
+}
+}
+
