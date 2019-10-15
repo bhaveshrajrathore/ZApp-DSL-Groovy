@@ -4,7 +4,7 @@ pipelineJob('ZingUpLife-DSL') {
             scm {
                 git{
                 remote {
-                url('https://github.com/bhaveshrajrathore/ZUL.git')
+                url('https://github.com/bhaveshrajrathore/ZullApp-latest.git')
                 credentials('HappyTrip')
             }
              branch('master')
